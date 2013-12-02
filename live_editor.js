@@ -4,13 +4,12 @@ define(function(require){
   var $ = require('jquery');
   var _ = require('underscore');
   var CodeMirror = require('codemirror');
-  var heredoc = require('heredoc');
   var async = require('async');
   var CodeMirrorHTML = require('codemirrorHTML');
   var easyTabs = require('easyTabs');
 
-  function toLiveEditor($container){
-    var result = toForm($container, function(err, result){
+  function toLiveEditor($container, options){
+    var result = toForm($container, options, function(err, result){
       if(err){
         throw(err);
       }
@@ -27,7 +26,8 @@ define(function(require){
           js: _.map(jsEditors,
                     function(editor){ return editor.getValue(); }).join("\n"),
           html: _.map(htmlEditors,
-                      function(editor){ return editor.getValue(); }).join("\n")
+                      function(editor){ return editor.getValue(); }).join("\n"),
+          templatePath: options.templatePath
         });
         $form.find('.result').css('display', 'inline-block');
         return false;
@@ -67,37 +67,34 @@ define(function(require){
       });
   }
 
-  function toForm($container, callback){
-    var $form = $(heredoc.strip(function(){ /*
-      <form>
-        <div class="source">
-          <div data-js="tab-container" class="tab-container">
-          <ul class="etabs"></ul>
-          </div>
-          <div class="button" data-js="button">
-            <input type="submit" value="Try it out!" />
-          </div>
-        </div>
-        <div class="result">
-          Result:
-          <div class="output"></div>
-          <div class="errors"></div>
-        </div>
-      </form>
-    */})).appendTo($container);
+  function toForm($container, options, callback){
+    var $form = $([
+      '<form>',
+        '<div class="source">',
+          '<div data-js="tab-container" class="tab-container">',
+          '<ul class="etabs"></ul>',
+          '</div>',
+          '<div class="button" data-js="button">',
+            '<input type="submit" value="Try it out!" />',
+          '</div>',
+        '</div>',
+        '<div class="result">',
+          'Result:',
+          '<div class="output"></div>',
+          '<div class="errors"></div>',
+        '</div>',
+      '</form>'
+    ].join('')).appendTo($container);
 
-    if($container.data('tryit-hide-tabs')){
+    if($container.data('live-editor-hide-tabs')){
       $form.find('ul').hide();
     }
 
-    var path = $container.data('tryit-source') + '/';
-    if(!path){
-      callback('data-tryit-source is required');
-    }
+    var path = options.sourcePath + '/';
 
-    var exampleID = $container.data('tryit-id');
+    var exampleID = $container.data('live-editor');
     if(!exampleID){
-      callback('data-tryit-id is required');
+      callback('data-live-editor is required');
     }
 
     $.ajax({
@@ -114,11 +111,11 @@ define(function(require){
         async.parallel(
           [].concat(
             _.map(example.html, function(url, label){
-              return _.partial(getFile, url, label);
+              return _.partial(getFile, path + url, label);
             })
           ).concat(
             _.map(example.js, function(url, label){
-              return _.partial(getFile, url, label);
+              return _.partial(getFile, path + url, label);
             })
           ),
           function(err, files){
@@ -127,11 +124,11 @@ define(function(require){
               // sort files according to example order
               var htmlFiles = _.map(example.html, function(url){
                 return _.find(files,
-                              function(file){ return file.url == url; });
+                              function(file){ return file.url == path + url; });
               });
               var jsFiles = _.map(example.js, function(url){
                 return _.find(files,
-                              function(file){ return file.url == url; });
+                              function(file){ return file.url == path + url; });
               });
 
               var htmlEditors = insertFilesToForm(
@@ -170,37 +167,39 @@ define(function(require){
   function createIframe($container, options){
     options = options || {};
     var $iframe = $('<iframe></iframe>')
-                        .attr('src', '/specs/template.html')
+                        .attr('src', options.templatePath)
                         .appendTo($container);
 
     var iframe = window.frames[window.frames.length - 1];
 
-    iframe.addEventListener("message", function(msg, data, other){
-      if(msg.data == 'chaiReady'){
-        var $body = $iframe.contents().find('body')
-        if(options.html){
-          $body.html(options.html);
-        }
-        if(options.js){
-          var script = document.createElement('script');
-          $body.append(script);
-          script.innerHTML = "define('myTest', function(require){" +
-            options.js +
-          "}); require(['myTest'], function(){});";
-        }
+    // wait for iframe to be ready
+    window.addEventListener("message", function(e){
+      if(e.data === "ready"){
+        // send content to embed
+        iframe.postMessage({html: options.html, js: options.js}, e.origin);
       }
-    });
-
-    iframe.onerror = function(errorMsg){
-      $container.siblings('.errors').append(errorMsg);
-    }
+      else if(e.data.error){
+        // display error
+        $container.siblings('.errors').append(e.data.error);
+      }
+    }, false);
 
     return $iframe;
   }
 
-  return function(selector){
-    $(selector).each(function(){
-      toLiveEditor($(this));
+  return function(elements, options){
+    elements = $.makeArray(elements);
+    options = options || {};
+
+    if(!options.sourcePath){
+      callback('sourcePath is required');
+    }
+    if(!options.templatePath){
+      callback('sourcePath is required');
+    }
+
+    $(elements).each(function(){
+      toLiveEditor($(this), options);
     });
   }
 
