@@ -1,0 +1,13 @@
+{
+  "name": "live_editor",
+  "version": "0.1.0",
+  "main": "live_editor.js",
+  "dependencies": {
+    "jquery": "1.10.2",
+    "underscore": "1.5.2",
+    "codemirror": "3.16.0",
+    "easytabs": "3.2.0",
+    "async": "0.2.9"
+  }
+}
+
