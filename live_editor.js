@@ -43,8 +43,9 @@ define(function(require){
     return str;
   }
 
-  function elementToLiveEditor($container, options){
-    var result = toForm($container, options, function(err, result){
+  function elementToLiveEditor($container){
+    var self = this;
+    toForm.call(this, $container, function(err, result){
       if(err){
         throw(err);
       }
@@ -52,18 +53,31 @@ define(function(require){
       var $form = result.$form;
       var htmlEditors = result.htmlEditors;
       var jsEditors = result.jsEditors;
+      var example = result.example;
 
-      // Render to iframe on submit
       $form.on('submit', function(){
         $form.find('.errors').empty();
         var output = $form.find('.output').empty();
-        createIframe(output, {
-          js: _.map(jsEditors,
-                    function(editor){ return editor.getValue(); }).join("\n"),
-          html: _.map(htmlEditors,
-                      function(editor){ return editor.getValue(); }).join("\n"),
-          templatePath: options.templatePath
+
+        // use the editor's value instead of the file's original content
+        example.html = _.map(htmlEditors, function(editor){
+                        return { content: editor.getValue() };
+                       });
+
+        example.js = _.map(jsEditors, function(editor){
+                        return { content: editor.getValue() };
+                       });
+
+        runExampleInIframe.call(self, {
+          container: output,
+          example: example,
+          hidden: false
+        }, function(err){
+          if(err){
+            output.siblings('.errors').html(err);
+          }
         });
+
         $form.find('.result').css('display', 'inline-block');
         return false;
       });
@@ -86,7 +100,8 @@ define(function(require){
     return editors;
   }
 
-  function toForm($container, options, callback){
+  function toForm($container, callback){
+    var self = this;
     var $form = $([
       '<form>',
         '<div class="source">',
@@ -114,66 +129,31 @@ define(function(require){
       callback('data-live-editor is required');
     }
 
-    $.ajax({
-      url: joinPath(options.sourcePath, 'index.json'),
-      dataType: 'json'
-    })
-      .done(function(index){
-        var example = index[exampleID];
-        example.html = example.html || [];
-        example.js = example.js || [];
-        example.selected = example.selected || 0;
-
-        // fetch all files
-        async.parallel(
-          [].concat(
-            _.map(example.html, function(url, label){
-              return _.partial(getFile,
-                               joinPath(options.sourcePath, url),
-                               label);
-            })
-          ).concat(
-            _.map(example.js, function(url, label){
-              return _.partial(getFile,
-                               joinPath(options.sourcePath, url),
-                               label);
-            })
-          ),
-          function(err, files){
-            if(err){ callback(err); }
-            else {
-              // sort files according to example order
-              var htmlFiles = _.map(example.html, function(url){
-                return _.find(files, function(file){
-                  return file.url == joinPath(options.sourcePath, url);
-                });
-              });
-              var jsFiles = _.map(example.js, function(url){
-                return _.find(files, function(file){
-                  return file.url == joinPath(options.sourcePath, url);
-                });
-              });
-
-              var htmlEditors = insertFilesToForm(
-                                  htmlFiles, $form, 'text/html', exampleID);
-              var jsEditors = insertFilesToForm(
-                                jsFiles, $form, 'application/javascript',
-                                exampleID);
-
-              $form.find('[data-js="tab-container"]').easytabs({
-                defaultTab: 'li:eq(' + example.selected + ')',
-                animate: false,
-                updateHash: false
-              });
-              callback(null, {$form: $form, htmlEditors: htmlEditors,
-                              jsEditors: jsEditors});
-            }
-          }
-        );
-      })
+    getExamples.call(this)
       .fail(function(xhr, error){
         callback(error);
-      });
+      })
+      .done(function(){
+        var example = _.findWhere(self.examples, { id: exampleID });
+        fetchExampleContent.call(self, example, function(err, example){
+          if(err){ return callback(err); }
+
+          var htmlEditors = insertFilesToForm(
+            example.html, $form, 'text/html', exampleID);
+
+          var jsEditors = insertFilesToForm(
+            example.js, $form, 'application/javascript', exampleID);
+
+          $form.find('[data-js="tab-container"]').easytabs({
+            defaultTab: 'li:eq(' + example.options.selected + ')',
+            animate: false,
+            updateHash: false
+          });
+
+          callback(null, {$form: $form, example: example,
+                           htmlEditors: htmlEditors, jsEditors: jsEditors});
+        });
+      })
   }
 
   function toCodeMirror(content, container, mode){
@@ -186,31 +166,6 @@ define(function(require){
       mode: mode
     });
   }
-
-
-  // takes in an array of DOM elements and transforms them to live editors
-  function toLiveEditor(elements, options){
-    elements = $.makeArray(elements);
-    options = options || {};
-
-    if(!options.sourcePath){
-      callback('sourcePath is required');
-    }
-    if(!options.templatePath){
-      callback('sourcePath is required');
-    }
-
-    $(elements).each(function(){
-      elementToLiveEditor($(this), options);
-    });
-  }
-
-
-
-
-
-
-
 
   function getExamples(){
     var deferred = $.Deferred();
@@ -326,9 +281,11 @@ define(function(require){
         );
       }
       else if(e.data === "complete"){
+        if(timeoutID){ clearTimeout(timeoutID); }
         callback(null);
       }
       else if(e.data.error){
+        if(timeoutID){ clearTimeout(timeoutID); }
         callback(e.data.error);
       }
     }, false);
@@ -386,7 +343,6 @@ define(function(require){
       });
   }
 
-
   var LiveEditor = function(options){
     options || (options = {});
 
@@ -429,6 +385,16 @@ define(function(require){
               return runEachExample.call(self, { hidden: options.hidden })
             });
   };
+
+  // takes in an array of DOM elements and transforms them to live editors
+  LiveEditor.prototype.toLiveEditor = function(elements){
+    var self = this;
+    elements = $.makeArray(elements);
+
+    $(elements).each(function(){
+      elementToLiveEditor.call(self, $(this));
+    });
+  }
 
   return LiveEditor;
 
