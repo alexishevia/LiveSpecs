@@ -212,6 +212,181 @@ define(function(require){
 
 
 
+  function getExamples(){
+    var deferred = $.Deferred();
+    var self = this;
+
+    $.get(this.indexURL)
+      .done(function(index){
+        var examples = [];
+        $.each(index, function(key, val){
+          examples.push({ id: key, options: val });
+        });
+
+        if(examples.length <= 0){
+          deferred.reject({
+            id: "NoSampleCode",
+            message: "No sample code found in index file: " + indexURL
+          });
+        }
+        else {
+          self.examples = examples;
+          deferred.notify({
+            id: "totalCount",
+            message: examples.length
+          });
+          deferred.resolve();
+        }
+      })
+      .fail(function(){
+        deferred.reject({
+          id: "IndexLoadError",
+          message: "Error while loading index file: " + self.indexURL
+        })
+      })
+
+    return deferred;
+  };
+
+  function runEachExample(options){
+    var deferred = $.Deferred();
+    var self = this;
+    var successCount = 0;
+
+    _.each(this.examples, function(example){
+      fetchExampleContent.call(self, example, function(err, example){
+        if(err){
+          deferred.reject({
+            id: "FileLoadError",
+            message: "Error loading files for example: " + example.id
+          });
+        }
+        else {
+          var iframe = runExampleInIframe.call(self, {
+            container: $('body'),
+            example: example,
+            hidden: options.hidden
+          }, function(err){
+            if(err){
+              deferred.reject({
+                id: example.id,
+                message: err
+              });
+            }
+            else {
+              successCount += 1;
+              deferred.notify({ id:'examplesCompleted', message: successCount });
+              if(successCount === self.examples.length){
+                deferred.resolve(self.examples.length);
+              }
+            }
+          });
+        }
+      });
+    });
+
+    return deferred;
+  };
+
+  function concatFileContents(files){
+    return files.map(function(file){
+      return file.content;
+    }).join("\n");
+  }
+
+  function runExampleInIframe(options, callback){
+    options = options || {};
+    var $iframe = $('<iframe></iframe>')
+                        .attr('src', this.templateURL)
+                        .appendTo(options.container);
+
+    if(options.hidden){
+      $iframe.hide();
+    }
+
+    var iframe = window.frames[window.frames.length - 1];
+
+    var timeoutID;
+    if(this.timeout){
+      timeoutID = setTimeout(function(){
+        callback('timeout');
+      }, this.timeout);
+    }
+
+    // wait for iframe to be ready
+    window.addEventListener("message", function(e){
+      if(e.data === "ready"){
+        // send content to embed
+        iframe.postMessage(
+          {
+            html: concatFileContents(options.example.html),
+            js: concatFileContents(options.example.js)
+          },
+          e.origin
+        );
+      }
+      else if(e.data === "complete"){
+        callback(null);
+      }
+      else if(e.data.error){
+        callback(e.data.error);
+      }
+    }, false);
+
+    return $iframe;
+  }
+
+  function fetchExampleContent(example, callback){
+    var self = this;
+
+    async.parallel(
+      [].concat(
+        _.map(example.options.html, function(url, label){
+          return _.bind(getFile, self, joinPath(self.examplesURL, url), label);
+        })
+      ).concat(
+        _.map(example.options.js, function(url, label){
+          return _.bind(getFile, self, joinPath(self.examplesURL, url), label);
+        })
+      ),
+      function(err, files){
+        if(err){ callback(err); }
+        else {
+          // sort files according to example order
+          example.html = _.map(example.options.html, function(url){
+            return _.find(files, function(file){
+              return file.url == joinPath(self.examplesURL, url);
+            });
+          });
+          example.js = _.map(example.options.js, function(url){
+            return _.find(files, function(file){
+              return file.url == joinPath(self.examplesURL, url);
+            });
+          });
+
+          callback(null, example);
+        }
+      }
+    );
+  }
+
+  function getFile(fileURL, label, callback){
+    if(!_.isString(label)){
+      label = _.last(fileURL.split('.')).toUpperCase();
+    }
+    return $.ajax({
+      url: fileURL,
+      dataType: 'text',
+    })
+      .done(function(content){
+        callback(null, {url:fileURL, content: content, label: label});
+      })
+      .fail(function(xhr, msg){
+        callback(msg);
+      });
+  }
+
+
   var LiveEditor = function(options){
     options || (options = {});
 
@@ -249,183 +424,11 @@ define(function(require){
   // runs all code specified on the index file and checks for errors
   LiveEditor.prototype.runExamples = function(options){
     var self = this;
-    return this.getExamples()
+    return getExamples.call(this)
             .then(function(){
-              return self.runEachExample.call(self, { hidden: options.hidden })
+              return runEachExample.call(self, { hidden: options.hidden })
             });
   };
-
-  LiveEditor.prototype.getExamples = function(){
-    var deferred = $.Deferred();
-    var self = this;
-
-    $.get(this.indexURL)
-      .done(function(index){
-        var examples = [];
-        $.each(index, function(key, val){
-          examples.push({ id: key, options: val });
-        });
-
-        if(examples.length <= 0){
-          deferred.reject({
-            id: "NoSampleCode",
-            message: "No sample code found in index file: " + indexURL
-          });
-        }
-        else {
-          self.examples = examples;
-          deferred.notify({
-            id: "totalCount",
-            message: examples.length
-          });
-          deferred.resolve();
-        }
-      })
-      .fail(function(){
-        deferred.reject({
-          id: "IndexLoadError",
-          message: "Error while loading index file: " + self.indexURL
-        })
-      })
-
-    return deferred;
-  };
-
-  LiveEditor.prototype.runEachExample = function(options){
-    var deferred = $.Deferred();
-    var self = this;
-    var successCount = 0;
-
-    _.each(this.examples, function(example){
-      self.fetchExampleContent(example, function(err, example){
-        if(err){
-          deferred.reject({
-            id: "FileLoadError",
-            message: "Error loading files for example: " + example.id
-          });
-        }
-        else {
-          var iframe = self.runExampleInIframe({
-            container: $('body'),
-            example: example,
-            hidden: options.hidden
-          }, function(err){
-            if(err){
-              deferred.reject({
-                id: example.id,
-                message: err
-              });
-            }
-            else {
-              successCount += 1;
-              deferred.notify({ id:'examplesCompleted', message: successCount });
-              if(successCount === self.examples.length){
-                deferred.resolve(self.examples.length);
-              }
-            }
-          });
-        }
-      });
-    });
-
-    return deferred;
-  };
-
-  LiveEditor.prototype.runExampleInIframe = function(options, callback){
-    options = options || {};
-    var $iframe = $('<iframe></iframe>')
-                        .attr('src', this.templateURL)
-                        .appendTo(options.container);
-
-    if(options.hidden){
-      $iframe.hide();
-    }
-
-    var iframe = window.frames[window.frames.length - 1];
-
-    var timeoutID;
-    if(this.timeout){
-      timeoutID = setTimeout(function(){
-        callback('timeout');
-      }, this.timeout);
-    }
-
-    // wait for iframe to be ready
-    window.addEventListener("message", function(e){
-      if(e.data === "ready"){
-        // send content to embed
-        iframe.postMessage({html: options.example.html, js: options.example.js},
-                           e.origin);
-      }
-      else if(e.data === "complete"){
-        callback(null);
-      }
-      else if(e.data.error){
-        callback(e.data.error);
-      }
-    }, false);
-
-    return $iframe;
-  }
-
-  LiveEditor.prototype.fetchExampleContent = function(example, callback){
-    var self = this;
-
-    async.parallel(
-      [].concat(
-        _.map(example.options.html, function(url, label){
-          return _.partial(self.getFile, joinPath(self.examplesURL, url), label);
-        })
-      ).concat(
-        _.map(example.options.js, function(url, label){
-          return _.partial(self.getFile, joinPath(self.examplesURL, url), label);
-        })
-      ),
-      function(err, files){
-        if(err){ callback(err); }
-        else {
-          // sort files according to example order
-          var htmlFiles = _.map(example.options.html, function(url){
-            return _.find(files, function(file){
-              return file.url == joinPath(self.examplesURL, url);
-            });
-          });
-          var jsFiles = _.map(example.options.js, function(url){
-            return _.find(files, function(file){
-              return file.url == joinPath(self.examplesURL, url);
-            });
-          });
-
-          // concat files
-          example.js = _.map(jsFiles, function(file){
-            return file.content;
-          }).join("\n");
-
-          example.html = _.map(htmlFiles, function(file){
-            return file.content;
-          }).join("\n");
-
-          callback(null, example);
-        }
-      }
-    );
-  }
-
-  LiveEditor.prototype.getFile = function(fileURL, label, callback){
-    if(!_.isString(label)){
-      label = _.last(fileURL.split('.')).toUpperCase();
-    }
-    return $.ajax({
-      url: fileURL,
-      dataType: 'text',
-    })
-      .done(function(content){
-        callback(null, {url:fileURL, content: content, label: label});
-      })
-      .fail(function(xhr, msg){
-        callback(msg);
-      });
-  }
 
   return LiveEditor;
 
