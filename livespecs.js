@@ -270,6 +270,12 @@ define(function(require){
 
     // wait for iframe to be ready
     window.addEventListener("message", function(e){
+
+      // don't answer to messages from other iframes
+      if(e.source !== iframe){
+        return;
+      }
+
       if(e.data === "ready"){
         // send content to embed
         iframe.postMessage(
