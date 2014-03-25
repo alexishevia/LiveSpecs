@@ -167,6 +167,7 @@ define(function(require){
     });
   }
 
+  // loads index file's content into self.examples
   function getExamples(){
     var deferred = $.Deferred();
     var self = this;
@@ -205,43 +206,66 @@ define(function(require){
 
   function runEachExample(options){
     var deferred = $.Deferred();
-    var self = this;
-    var successCount = 0;
+    var totalExamples = this.examples.length;
 
-    _.each(this.examples, function(example){
-      fetchExampleContent.call(self, example, function(err, example){
-        if(err){
-          deferred.reject({
-            id: "FileLoadError",
-            message: "Error loading files for example: " + example.id
-          });
-        }
-        else {
-          var iframe = runExampleInIframe.call(self, {
-            container: $('body'),
-            example: example,
-            hidden: options.hidden
-          }, function(err){
-            if(err){
-              deferred.reject({
-                id: example.id,
-                message: err
-              });
-            }
-            else {
-              successCount += 1;
-              deferred.notify({ id:'examplesCompleted', message: successCount });
-              if(successCount === self.examples.length){
-                deferred.resolve(self.examples.length);
-              }
-            }
-          });
-        }
-      });
-    });
+    var concurrency = options.concurrency || 'parallel';
+    if(!_.contains(['parallel', 'series'], concurrency)){
+      throw 'concurrency must be "parallel" or "series"';
+    }
+
+    async[concurrency](
+      generateExampleFunctions.call(this, deferred, {hidden: options.hidden}),
+      function(){ deferred.resolve(totalExamples); }
+    );
 
     return deferred;
   };
+
+  // generates an array of functions.
+  // Each function will execute a single example. The function will reflect its
+  // result both on the deferred object and on the callback function.
+  // TODO: refactor this so it either uses promises or async.js, but not both
+  function generateExampleFunctions(deferred, options){
+    var self = this;
+    var successCount = 0;
+
+    return _.map(this.examples, function(example){
+      return function(callback){
+
+        fetchExampleContent.call(self, example, function(err, example){
+          if(err){
+            var error = {
+              id: "FileLoadError",
+              message: "Error loading files for example: " + example.id
+            };
+            deferred.reject(error);
+            return callback(error);
+          }
+          else {
+            var iframe = runExampleInIframe.call(self, {
+              container: $('body'),
+              example: example,
+              hidden: options.hidden
+            }, function(err){
+              if(err){
+                var error = {
+                  id: example.id,
+                  message: err
+                };
+                deferred.reject(error);
+                return callback(error);
+              }
+              else {
+                successCount += 1;
+                deferred.notify({ id:'examplesCompleted', message: successCount });
+                return callback();
+              }
+            });
+          }
+        });
+      }
+    });
+  }
 
   function concatFileContents(files){
     return files.map(function(file){
@@ -383,12 +407,19 @@ define(function(require){
     }
   };
 
-  // runs all code specified on the index file and checks for errors
+  // runs all code specified on the index file.
+  // returns a promise
+  //    promise.progress called for each spec that passes
+  //    promise.done called when all specs pass
+  //    promise.fail called if any spec fails
   LiveEditor.prototype.runExamples = function(options){
     var self = this;
     return getExamples.call(this)
             .then(function(){
-              return runEachExample.call(self, { hidden: options.hidden })
+              return runEachExample.call(self, {
+                hidden: options.hidden,
+                concurrency: options.concurrency || 'parallel'
+              })
             });
   };
 
