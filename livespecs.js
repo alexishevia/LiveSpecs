@@ -43,8 +43,10 @@ define(function(require){
     return str;
   }
 
-  function elementToLiveEditor($container){
+  function elementToLiveEditor($container, options){
+    options = _.extend({tryIt: true}, options);
     var self = this;
+
     toForm.call(this, $container, function(err, result){
       if(err){
         throw(err);
@@ -55,32 +57,37 @@ define(function(require){
       var jsEditors = result.jsEditors;
       var example = result.example;
 
-      $form.on('submit', function(){
-        $form.find('.errors').empty();
-        var output = $form.find('.output').empty();
+      if(options.tryIt){
+        $form.on('submit', function(){
+          $form.find('.errors').empty();
+          var output = $form.find('.output').empty();
 
-        // use the editor's value instead of the file's original content
-        example.html = _.map(htmlEditors, function(editor){
-                        return { content: editor.getValue() };
-                       });
+          // use the editor's value instead of the file's original content
+          example.html = _.map(htmlEditors, function(editor){
+                          return { content: editor.getValue() };
+                         });
 
-        example.js = _.map(jsEditors, function(editor){
-                        return { content: editor.getValue() };
-                       });
+          example.js = _.map(jsEditors, function(editor){
+                          return { content: editor.getValue() };
+                         });
 
-        runExampleInIframe.call(self, {
-          container: output,
-          example: example,
-          hidden: false
-        }, function(err){
-          if(err){
-            output.siblings('.errors').html(err);
-          }
+          runExampleInIframe.call(self, {
+            container: output,
+            example: example,
+            hidden: false
+          }, function(err){
+            if(err){
+              output.siblings('.errors').html(err);
+            }
+          });
+
+          $form.find('.result').css('display', 'inline-block');
+          return false;
         });
-
-        $form.find('.result').css('display', 'inline-block');
-        return false;
-      });
+      }
+      else {
+        $form.find('input[type="submit"]').remove();
+      }
 
     });
   }
@@ -424,12 +431,12 @@ define(function(require){
   };
 
   // takes in an array of DOM elements and transforms them to live editors
-  LiveEditor.prototype.toLiveEditor = function(elements){
+  LiveEditor.prototype.toLiveEditor = function(elements, options){
     var self = this;
     elements = $.makeArray(elements);
 
     $(elements).each(function(){
-      elementToLiveEditor.call(self, $(this));
+      elementToLiveEditor.call(self, $(this), options);
     });
   }
 
