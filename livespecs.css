@@ -52,6 +52,9 @@
 .live-editor .errors {
   color: red;
 }
+.live-editor .success{
+  color: green;
+}
 .live-editor iframe {
   height: auto;
 }

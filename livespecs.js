@@ -79,6 +79,9 @@ define(function(require){
             if(err){
               output.siblings('.errors').html(err);
             }
+            else {
+              output.siblings('.success').html('Success!');
+            }
           });
 
           $form.find('.result').css('display', 'inline-block');
@@ -123,6 +126,7 @@ define(function(require){
           'Result:',
           '<div class="output"></div>',
           '<div class="errors"></div>',
+          '<div class="success"></div>',
         '</div>',
       '</form>'
     ].join('')).appendTo($container);
