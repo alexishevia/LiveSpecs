@@ -95,7 +95,7 @@ define(function(require){
   function insertFilesToForm(files, $form, mode, exampleID){
     var editors = [];
     _.each(files, function(file, i){
-      var id = (exampleID + '-' + _.last(file.url.split('/'))).replace(/\./g, '-');
+      var id = (exampleID + file.url).replace(/\./g, '-').replace(/\//g, '-');
       var $item = $('<li class="tab"><a href="#' + id + '">' + file.label +
                    '</a></li>').appendTo($form.find('ul'));
       var $container = $('<div id="' + id + '"></div>')
