@@ -59,7 +59,7 @@ define(function(require){
 
       if(options.tryIt){
         $form.on('submit', function(){
-          $form.find('.errors').empty();
+          $form.find('.errors, .success').empty();
           var output = $form.find('.output').empty();
 
           // use the editor's value instead of the file's original content
