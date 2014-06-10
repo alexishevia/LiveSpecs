@@ -1,12 +1,17 @@
-define(function(require){
-  'use strict';
+// LiveSpecs.js
 
-  var $ = require('jquery');
-  var _ = require('underscore');
-  var CodeMirror = require('codemirror');
-  var async = require('async');
-  var CodeMirrorHTML = require('codemirrorHTML');
-  var easyTabs = require('easyTabs');
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery', 'underscore', 'codemirror', 'async', 'easyTabs',
+               'codemirrorHTML'], factory);
+    } else {
+        // Browser globals
+        root.LiveSpecs = factory(root.$, root._, root.CodeMirror, root.async,
+                                 root.easyTabs);
+    }
+}(this, function ($, _, CodeMirror, async, easyTabs) {
+  'use strict';
 
   function joinPath(){
     var args = [].slice.call(arguments),
@@ -446,4 +451,4 @@ define(function(require){
 
   return LiveEditor;
 
-});
+}));
