@@ -1,0 +1,28 @@
+<!-- include any libraries you will use in your specs -->
+<script src="../../calc.js"></script>
+<script src="../bower_components/jquery/dist/jquery.js"></script>
+<script src="../bower_components/chai/chai.js"></script>
+
+<!-- script to render specs into body -->
+<script>
+  // listen to parent's message for content
+  window.addEventListener("message", function(e){
+    var body = document.getElementsByTagName('body')[0];
+    if(e.data.html){
+      body.innerHTML += e.data.html;
+    }
+    if(e.data.js){
+      var script = document.createElement('script');
+      body.appendChild(script);
+      script.innerHTML = e.data.js;
+    }
+  }, false);
+
+  // notify parent of any error
+  window.onerror = function(e){
+    parent.postMessage({error: e}, '*');
+  };
+
+  // tell parent we're ready to receive content
+  parent.postMessage('ready', '*');
+</script>

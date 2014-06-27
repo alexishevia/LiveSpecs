@@ -1,0 +1,14 @@
+{
+  "name": "easytabs",
+  "homepage": "https://github.com/JangoSteve/jQuery-EasyTabs",
+  "version": "3.2.0",
+  "_release": "3.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v3.2.0",
+    "commit": "581d46d9fb3b3b63d230754b01b8ba7236cd183f"
+  },
+  "_source": "git://github.com/JangoSteve/jQuery-EasyTabs.git",
+  "_target": ">= 3.2.0",
+  "_originalSource": "easytabs"
+}

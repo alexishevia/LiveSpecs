@@ -1,0 +1,25 @@
+{
+  "name": "livespecs",
+  "version": "0.2.2",
+  "main": "live_editor.js",
+  "dependencies": {
+    "jquery": ">= 1.10.0",
+    "underscore": ">= 1.5.0",
+    "codemirror": ">= 3.20.0",
+    "easytabs": ">= 3.2.0",
+    "async": ">= 0.2.0"
+  },
+  "ignore": [
+    ".gitignore"
+  ],
+  "homepage": "https://github.com/alexishevia/LiveSpecs",
+  "_release": "0.2.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.2.2",
+    "commit": "9f4fcb828c8e88245a4c4399e409efe5793dfe1b"
+  },
+  "_source": "git://github.com/alexishevia/LiveSpecs.git",
+  "_target": "~0.2.1",
+  "_originalSource": "livespecs"
+}

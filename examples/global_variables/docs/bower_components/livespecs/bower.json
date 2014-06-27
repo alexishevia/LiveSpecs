@@ -1,0 +1,13 @@
+{
+  "name": "livespecs",
+  "version": "0.2.2",
+  "main": "live_editor.js",
+  "dependencies": {
+    "jquery": ">= 1.10.0",
+    "underscore": ">= 1.5.0",
+    "codemirror": ">= 3.20.0",
+    "easytabs": ">= 3.2.0",
+    "async": ">= 0.2.0"
+  },
+  "ignore": [".gitignore"]
+}
