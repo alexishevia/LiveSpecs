@@ -49,12 +49,13 @@ First, create an index.json with all your specs
 Then, create a template file where your specs will be rendered into.
 
 This template file will be rendered inside an iFrame and must communicate with the test suite following this conventions:
+
 1. When you're ready to receive content, call `parent.postMessage('ready', '*')`
-2. The test suite will trigger a "message" event. The event object will contain a `data` property with the following content:
+1. The test suite will trigger a "message" event. The event object will contain a `data` property with the following content:
   - `evt.data.js` is a string with all the JS files you specified concatenated
   - `evt.data.html` is a string withh all the HTML files you specified concatenated
-3. If the spec failed, call `parent.postMessage({error: e}, '*')`
-4. If the spec passed, call `parent.postMessage('complete', '*')`
+1. If the spec failed, call `parent.postMessage({error: e}, '*')`
+1. If the spec passed, call `parent.postMessage('complete', '*')`
 
 If the 
 ```
