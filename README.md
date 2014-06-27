@@ -54,7 +54,7 @@ This template file will be rendered inside an iFrame and must communicate with t
 1. When you're ready to receive content, call `parent.postMessage('ready', '*')`
 1. The test suite will trigger a "message" event. The event object will contain a `data` property with the following content:
   - `evt.data.js` is a string with all the JS files you specified concatenated
-  - `evt.data.html` is a string withh all the HTML files you specified concatenated
+  - `evt.data.html` is a string with all the HTML files you specified concatenated
 1. If the spec failed, call `parent.postMessage({error: e}, '*')`
 1. If the spec passed, call `parent.postMessage('complete', '*')`
 
