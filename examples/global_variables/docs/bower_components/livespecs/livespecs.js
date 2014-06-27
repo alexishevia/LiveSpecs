@@ -161,7 +161,7 @@
             example.js, $form, 'application/javascript', exampleID);
 
           $form.find('[data-js="tab-container"]').easytabs({
-            defaultTab: 'li:eq(' + (example.options.selected || 0) + ')',
+            defaultTab: 'li:eq(' + ($container.data('selected') || 0) + ')',
             animate: false,
             updateHash: false
           });
@@ -452,3 +452,4 @@
   return LiveEditor;
 
 }));
+

@@ -9,5 +9,5 @@
     "easytabs": ">= 3.2.0",
     "async": ">= 0.2.0"
   },
-  "ignore": [".gitignore"]
+  "ignore": [".gitignore", "examples"]
 }
