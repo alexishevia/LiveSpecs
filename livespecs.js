@@ -136,13 +136,13 @@
       '</form>'
     ].join('')).appendTo($container);
 
-    if($container.data('hideTabs')){
+    if($container.data('hide-tabs')){
       $form.find('ul').hide();
     }
 
-    var exampleID = $container.data('specID');
+    var exampleID = $container.data('spec-id');
     if(!exampleID){
-      callback('data-specID is required');
+      callback('data-spec-id is required');
     }
 
     getExamples.call(this)
