@@ -32,16 +32,14 @@ First, create an index.json with all your specs
     "js": {
       "Example": "some_file_with_code.js",
       "Result": "some_file_with_assertions.js"
-    },
-    "selected": 0
+    }
   },
   "mySpecB": {
     "js": {
       "Step 1": "file_with_code.js",
       "Step 2": "other_file_with_code.js",
       "Step 3": "file_with_more_code.js"
-    },
-    "selected": 0
+    }
   }
 }
 ```
@@ -83,10 +81,20 @@ This is a basic template file that you can use as a reference:
 </script>
 ```
 
-On your documentation site, include one or more elements with a `data-live-editor` property. The value must match one of the keys you specified on the index.json file.
+On your documentation site, include one or more elements with a `data-spec-id` property. The value must match one of the keys you specified on the index.json file.
 ```
 <p>Here I can explain how my library works.</p>
-<div class="live-editor" data-live-editor="mySpecA"></div>
+<div class="live-editor" data-spec-id="mySpecA"></div>
+```
+
+You can optionally define `data-hide-tabs` and `data-selected` attributes to control wether tabs should be hidden or not, and which tab should be selected by default.
+
+```
+<p>I want a LiveSpec with no tabs.</p>
+<div class="live-editor" data-spec-id="mySpecA" data-hide-tabs="1"></div>
+
+<p>And then a LiveSpec where the third tab is selected by default.</p>
+<div class="live-editor" data-spec-id="mySpecA" data-selected="2"></div>
 ```
 
 Convert them to LiveSpecs by running
