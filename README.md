@@ -57,7 +57,7 @@ This template file will be rendered inside an iFrame and must communicate with t
 1. If the spec failed, call `parent.postMessage({error: e}, '*')`
 1. If the spec passed, call `parent.postMessage('complete', '*')`
 
-If the 
+This is a basic template file that you can use as a reference:
 ```
 <script>
   // listen to parent's message for content
@@ -83,7 +83,7 @@ If the
 </script>
 ```
 
-On your documentation site, include one or more elements with a `data-live-editor` property containing the id of the spec you want to render
+On your documentation site, include one or more elements with a `data-live-editor` property. The value must match one of the keys you specified on the index.json file.
 ```
 <p>Here I can explain how my library works.</p>
 <div class="live-editor" data-live-editor="mySpecA"></div>
