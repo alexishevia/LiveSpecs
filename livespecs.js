@@ -136,13 +136,13 @@
       '</form>'
     ].join('')).appendTo($container);
 
-    if($container.data('live-editor-hide-tabs')){
+    if($container.data('hideTabs')){
       $form.find('ul').hide();
     }
 
-    var exampleID = $container.data('live-editor');
+    var exampleID = $container.data('specID');
     if(!exampleID){
-      callback('data-live-editor is required');
+      callback('data-specID is required');
     }
 
     getExamples.call(this)
