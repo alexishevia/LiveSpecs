@@ -35,6 +35,9 @@ First, create an index.json with all your specs
     }
   },
   "mySpecB": {
+    "html": {
+      "Markup": "some_html_file.html"
+    },
     "js": {
       "Step 1": "file_with_code.js",
       "Step 2": "other_file_with_code.js",
