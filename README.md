@@ -6,7 +6,7 @@ LiveSpecs is based on 3 ideas:
 - Documentation should never go out of date
 - Code samples are the best type of documentation
 
-With LiveSpecs you can write code samples that can be displayed on your documentation site, but also run as part of your test suite.
+With LiveSpecs you can write code samples that are be displayed on your documentation site, but also run as part of your test suite.
 
 ## Installation
 Using bower:
