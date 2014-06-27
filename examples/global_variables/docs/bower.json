@@ -16,7 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "livespecs": "~0.2.3",
+    "livespecs": "~0.2.4",
     "chai": "~1.9.1"
   }
 }

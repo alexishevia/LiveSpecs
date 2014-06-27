@@ -1,6 +1,6 @@
 {
   "name": "livespecs",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "live_editor.js",
   "dependencies": {
     "jquery": ">= 1.10.0",
@@ -9,5 +9,5 @@
     "easytabs": ">= 3.2.0",
     "async": ">= 0.2.0"
   },
-  "ignore": [".gitignore"]
+  "ignore": [".gitignore", "examples"]
 }
