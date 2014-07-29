@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Spec Runner</title>
+
+  <!-- include LiveSpecs' dependencies (I'm working on reducing them) -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
+  <script src="bower_components/async/lib/async.js"></script>
+  <script src="bower_components/easytabs/lib/jquery.easytabs.js"></script>
+  <script src="bower_components/codemirror/lib/codemirror.js"></script>
+  <script src="bower_components/codemirror/mode/javascript/javascript.js"></script>
+
+  <!-- include LiveSpecs -->
+  <script src="bower_components/livespecs/livespecs.js"></script>
+</head>
+<body>
+  <div>
+    Loaded: <span id="loadCount">0</span> of <span id="totalCount">0</span>
+  </div>
+  <div id="done" style="display:none;">Done</div>
+  <dl id="failed" style="display:none;">Failed: </dl>
+
+  <!-- Run all specs in parallel and output result -->
+  <script>
+    var liveSpecs = new LiveSpecs({
+      indexURL: 'specs/index.json',
+      templateURL: 'template.html',
+      timeout: 8000
+    });
+
+    liveSpecs.runExamples({hidden: true, concurrency: 'parallel'})
+      .progress(function(evt){
+        log(evt.id, evt.message);
+      })
+      .done(function(totalCount){
+        log('done', totalCount);
+      })
+      .fail(function(err){
+        log('error', err);
+      });
+
+    function log(type, data){
+      switch(type){
+
+        case 'totalCount':
+          $('#totalCount').html(data);
+          break;
+
+        case 'examplesCompleted':
+          $('#loadCount').html(data);
+          break;
+
+        case 'done':
+          console.log(JSON.stringify({ done: true, totalCount: data }));
+          $('#done').show();
+          break;
+
+        case 'error':
+          console.log(JSON.stringify({ error: data }));
+          var dt = $('<dt>').append(data.id);
+          var dd = $('<dd>').html(data.message);
+          $('#failed').append(dt).append(dd).show();
+          break;
+      }
+    }
+  </script>
+</body>
+</html>
