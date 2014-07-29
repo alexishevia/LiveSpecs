@@ -4,19 +4,24 @@
   <meta charset="utf-8" />
   <title>CalcJS Docs</title>
 
+  <!-- include LiveSpecs' stylesheets to render code and tabs correctly -->
   <link rel="stylesheet" type="text/css" href="bower_components/codemirror/lib/codemirror.css">
   <link rel="stylesheet" type="text/css" href="bower_components/codemirror/theme/blackboard.css">
   <link rel="stylesheet" type="text/css" href="bower_components/livespecs/livespecs.css">
 
+  <!-- include LiveSpecs' dependencies (I'm working on reducing them) -->
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/underscore/underscore.js"></script>
   <script src="bower_components/async/lib/async.js"></script>
   <script src="bower_components/easytabs/lib/jquery.easytabs.js"></script>
   <script src="bower_components/codemirror/lib/codemirror.js"></script>
   <script src="bower_components/codemirror/mode/javascript/javascript.js"></script>
+
+  <!-- include LiveSpecs -->
   <script src="bower_components/livespecs/livespecs.js"></script>
 </head>
 <body>
+  <!-- write your documentation -->
   <h1>CalcJS</h1>
   <p>CalcJS is a very simple javascript calculator.</p>
 
@@ -29,6 +34,7 @@
   <div class="live-editor" data-spec-id="substractingExample"></div>
 
   <script>
+    /* transform all elements with .live-editor class into LiveSpecs */
     new LiveSpecs({
       indexURL: 'specs/index.json',
       templateURL: 'specs/template.html'
@@ -37,4 +43,3 @@
   </script>
 </body>
 </html>
-
