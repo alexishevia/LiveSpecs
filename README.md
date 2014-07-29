@@ -108,3 +108,6 @@ new LiveSpecs({
 })
   .toLiveEditor($(".live-editor"));
 ```
+
+## Examples
+Check out the [examples directory](https://github.com/alexishevia/LiveSpecs/tree/master/examples) for examples on how to use LiveSpecs, either as an AMD module or a global window variable.
