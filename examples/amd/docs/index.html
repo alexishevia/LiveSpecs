@@ -32,7 +32,8 @@
 
       new LiveSpecs({
         indexURL: 'specs/index.json',
-        templateURL: 'template.html'
+        templateURL: 'template.html',
+        timeout: 8000
       })
         .toLiveEditor($(".live-editor"));
 
