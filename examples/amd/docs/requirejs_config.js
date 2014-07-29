@@ -1,5 +1,7 @@
 require.config({
+  baseUrl: '/docs',
   paths: {
+    calcjs: '../calc',
     jquery: 'bower_components/jquery/dist/jquery',
     underscore: 'bower_components/underscore/underscore',
     codemirror: 'bower_components/codemirror',

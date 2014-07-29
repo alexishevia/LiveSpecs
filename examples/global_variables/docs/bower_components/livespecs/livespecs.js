@@ -1,16 +1,19 @@
 // LiveSpecs.js
 
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(['jquery', 'underscore', 'codemirror', 'async', 'easyTabs',
-               'codemirrorHTML'], factory);
-    } else {
-        // Browser globals
-        root.LiveSpecs = factory(root.$, root._, root.CodeMirror, root.async,
-                                 root.easyTabs);
-    }
-}(this, function ($, _, CodeMirror, async, easyTabs) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['jquery', 'underscore', 'async', 'easyTabs',
+           'codemirror/lib/codemirror', 'codemirror/mode/htmlmixed/htmlmixed',
+           'codemirror/mode/css/css', 'codemirror/mode/javascript/javascript',
+           'codemirror/mode/xml/xml'], factory);
+
+  } else {
+    // Browser globals
+    root.LiveSpecs = factory(root.$, root._, root.async, root.easyTabs,
+                             root.CodeMirror);
+  }
+}(this, function ($, _, async, easyTabs, CodeMirror) {
   'use strict';
 
   function joinPath(){

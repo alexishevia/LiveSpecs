@@ -4,7 +4,7 @@
   - you call parent.postMessage('complete') on success
 */
 
-var assert = chai.assert;
+var assert = require('chai').assert;
 assert.equal(result, 7);
 
 parent.postMessage('complete', '*');

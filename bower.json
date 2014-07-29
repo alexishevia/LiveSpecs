@@ -1,6 +1,6 @@
 {
   "name": "livespecs",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "live_editor.js",
   "dependencies": {
     "jquery": ">= 1.10.0",
