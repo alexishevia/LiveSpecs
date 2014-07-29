@@ -47,14 +47,14 @@ First, create an index.json with all your specs
 }
 ```
 
-Then, create a template file where your specs will be rendered into.
+Then, create a template file for your specs.
 
 This template file will be rendered inside an iFrame and must communicate with the test suite following this conventions:
 
 1. When you're ready to receive content, call `parent.postMessage('ready', '*')`
 1. The test suite will trigger a "message" event. The event object will contain a `data` property with the following content:
-  - `evt.data.js` is a string with all the JS files you specified concatenated
-  - `evt.data.html` is a string with all the HTML files you specified concatenated
+  - `evt.data.html` will have the content of all the HTML files you specified, concatenated as a single string
+  - `evt.data.js` will have the content of all the JS files you specified, concatenated as a single string
 1. If the spec failed, call `parent.postMessage({error: e}, '*')`
 1. If the spec passed, call `parent.postMessage('complete', '*')`
 
@@ -94,7 +94,7 @@ You can optionally define `data-hide-tabs` and `data-selected` attributes to con
 
 ```
 <p>I want a LiveSpec with no tabs.</p>
-<div class="live-editor" data-spec-id="mySpecA" data-hide-tabs="1"></div>
+<div class="live-editor" data-spec-id="mySpecA" data-hide-tabs="true"></div>
 
 <p>And then a LiveSpec where the third tab is selected by default.</p>
 <div class="live-editor" data-spec-id="mySpecA" data-selected="2"></div>
