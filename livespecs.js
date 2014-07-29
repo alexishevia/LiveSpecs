@@ -10,8 +10,8 @@
 
   } else {
     // Browser globals
-    root.LiveSpecs = factory(root.$, root._, root.CodeMirror, root.async,
-                             root.easyTabs);
+    root.LiveSpecs = factory(root.$, root._, root.async, root.easyTabs,
+                             root.CodeMirror);
   }
 }(this, function ($, _, async, easyTabs, CodeMirror) {
   'use strict';
