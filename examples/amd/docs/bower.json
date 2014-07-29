@@ -1,0 +1,23 @@
+{
+  "name": "amd",
+  "version": "0.0.1",
+  "homepage": "https://github.com/alexishevia/LiveSpecs/tree/master/examples/amd",
+  "authors": [
+    "Alexis Hevia <hevia.alexis@gmail.com>"
+  ],
+  "description": "example for using livespecs as an amd module",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "~2.1.14",
+    "livespecs": "~0.2.4",
+    "chai": "~1.9.1"
+  }
+}

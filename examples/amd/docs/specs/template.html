@@ -1,0 +1,29 @@
+<!-- include requirejs -->
+<script src="bower_components/requirejs/require.js"></script>
+<script src="scripts/rjs_config.js"></script>
+
+<!-- render specs into body -->
+<script>
+  // listen to parent's message for content
+  window.addEventListener("message", function(e){
+    var body = document.getElementsByTagName('body')[0];
+    if(e.data.html){
+      body.innerHTML += e.data.html;
+    }
+    if(e.data.js){
+      var script = document.createElement('script');
+      body.appendChild(script);
+      script.innerHTML = "define('myTest', function(require){" +
+        e.data.js +
+      "}); require(['myTest'], function(){});";
+    }
+  }, false);
+
+  // notify parent of any error
+  window.onerror = function(e){
+    parent.postMessage({error: e}, '*');
+  };
+
+  // tell parent we're ready to receive content
+  parent.postMessage('ready', '*');
+</script>

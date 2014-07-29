@@ -1,0 +1,96 @@
+.live-editor div,
+.live-editor h1,
+.live-editor h2,
+.live-editor h3,
+.live-editor h4,
+.live-editor h5,
+.live-editor p,
+.live-editor ul,
+.live-editor dl,
+.live-editor ol,
+.live-editor pre,
+.live-editor img {
+  padding-left: inherit;
+  padding-right: inherit;
+}
+.live-editor pre {
+  padding-left: 0.4rem;
+}
+.live-editor .source,
+.live-editor .result {
+  text-align: left;
+}
+.live-editor .CodeMirror {
+  height: auto;
+  line-height: 1.06rem;
+  font-size: 1.03rem;
+}
+.live-editor .CodeMirror-scroll {
+  overflow: auto;
+}
+.live-editor .label,
+.live-editor .button {
+  text-align: right;
+}
+.live-editor .code {
+  margin-bottom: 0.5rem;
+}
+.live-editor .source,
+.live-editor .result {
+  width: 42rem;
+  margin-left: 1rem;
+}
+.live-editor .result {
+  display: none;
+  margin-left: 1rem;
+  resize: both;
+}
+.live-editor .errors {
+  color: red;
+}
+.live-editor .success{
+  color: green;
+}
+.live-editor iframe {
+  height: auto;
+}
+.live-editor .etabs {
+  margin: 0;
+  padding: 0;
+}
+.live-editor .tab {
+  display: inline-block;
+  zoom: 1;
+  margin: 0 0.2rem;
+  background: #eee;
+  border: solid 1px #999;
+  border-bottom: none;
+  -moz-border-radius: 4px 4px 0 0;
+  -webkit-border-radius: 4px 4px 0 0;
+}
+.live-editor .tab a {
+  font-size: 14px;
+  line-height: 2em;
+  display: block;
+  padding: 0 10px;
+  text-decoration: none;
+  color: blue;
+  outline: none;
+}
+.live-editor .tab.active {
+  background: #fff;
+  padding-top: 6px;
+  position: relative;
+  top: 1px;
+  border-color: #666;
+}
+.live-editor .tab a.active {
+  font-weight: bold;
+}
+.live-editor .tab-container .panel-container {
+  background: #fff;
+  border: solid #666 1px;
+  padding: 10px;
+  -moz-border-radius: 0 4px 4px 4px;
+  -webkit-border-radius: 0 4px 4px 4px;
+}

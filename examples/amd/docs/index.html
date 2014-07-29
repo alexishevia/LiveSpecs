@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CalcJS Docs</title>
+
+  <!-- include LiveSpecs' stylesheets to render code and tabs correctly -->
+  <link rel="stylesheet" type="text/css" href="bower_components/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/codemirror/theme/blackboard.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/livespecs/livespecs.css">
+
+  <!-- include require.js -->
+  <script src="bower_components/requirejs/require.js"></script>
+  <script src="requirejs_config.js"></script>
+</head>
+<body>
+  <!-- write your documentation -->
+  <h1>CalcJS</h1>
+  <p>CalcJS is a very simple javascript calculator.</p>
+
+  <h2>Addition</h2>
+  <p>You can add two numbers by using the add() function.</p>
+  <div class="live-editor" data-spec-id="addingExample"></div>
+
+  <h2>Substraction</h2>
+  <p>You can substract two numbers by using the substract() function.</p>
+  <div class="live-editor" data-spec-id="substractingExample"></div>
+
+  <!-- transform all elements with .live-editor class into LiveSpecs -->
+  <script>
+    require(['jquery', 'livespecs'], function($, LiveSpecs){
+
+      new LiveSpecs({
+        indexURL: 'specs/index.json',
+        templateURL: 'specs/template.html'
+      })
+        .toLiveEditor($(".live-editor"));
+
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "addingExample": {
+    "js": {
+      "Example": "adding/example.js",
+      "Result": "adding/assertions.js"
+    }
+  },
+  "substractingExample": {
+    "js": {
+      "Example": "substracting/example.js",
+      "Result": "substracting/assertions.js"
+    }
+  }
+}
