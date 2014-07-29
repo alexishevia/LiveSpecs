@@ -111,3 +111,5 @@ new LiveSpecs({
 
 ## Examples
 Check out the [examples directory](https://github.com/alexishevia/LiveSpecs/tree/master/examples) for examples on how to use LiveSpecs, either as an AMD module or a global variable.
+
+Or visit [http://livespecs.alexishevia.com/](http://livespecs.alexishevia.com) to see the examples running on the web.
